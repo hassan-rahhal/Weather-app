@@ -2,6 +2,9 @@ import React, { useState, useEffect } from "react";
 import "./weather.css";
 
 const WeatherApp = () => {
+  useEffect(() => {
+    alert("Make sure your location on the device is turned on and accepting location access permission.");
+  }, []);
   const [weatherData, setWeatherData] = useState(null); 
   const [locationName, setLocationName] = useState("");
   const [query, setQuery] = useState("");
