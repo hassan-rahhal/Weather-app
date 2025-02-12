@@ -221,22 +221,35 @@ const WeatherApp = () => {
   };
 
   const getCurrentLocationWeather = () => {
-    if (navigator.geolocation) {
-      setLoading(true);
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          fetchWeather(latitude, longitude, "Your Location");
-        },
-        () => {
-          setError("Unable to retrieve current location.");
-          setLoading(false);
-        }
-      );
-    } else {
+    if (!navigator.geolocation) {
       setError("Geolocation is not supported by this browser.");
+      setLoading(false);
+      return;
     }
+  
+    setLoading(true);
+    
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        fetchWeather(latitude, longitude, "Your Location");
+        setLoading(false); // Ensure loading state is updated
+      },
+      (error) => {
+        let errorMessage = "Unable to retrieve current location.";
+        if (error.code === 1) {
+          errorMessage = "Location access denied. Please enable location services.";
+        } else if (error.code === 2) {
+          errorMessage = "Location unavailable.";
+        } else if (error.code === 3) {
+          errorMessage = "Location request timed out.";
+        }
+        setError(errorMessage);
+        setLoading(false);
+      }
+    );
   };
+  
 
   useEffect(() => {
     getCurrentLocationWeather();
